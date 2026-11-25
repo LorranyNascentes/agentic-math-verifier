@@ -58,7 +58,7 @@ def build_graph(llm: LLM, tools: ToolRegistry | None = None) -> StateGraph:
 
     def critic(s: AgentState) -> dict:
         failed = [r for r in s.results if not r.verified]
-                evidence = json.dumps([r.model_dump(mode="json") for r in s.results], indent=2)
+        evidence = json.dumps([r.model_dump(mode="json") for r in s.results], indent=2)
         claims_json = json.dumps([c.model_dump(mode="json") for c in s.claims])
         review = generate(llm, "critic", Critique, SYSTEM["critic"],
                           f"Validation evidence:\n{evidence}\n\nClaims:\n{claims_json}")
