@@ -58,9 +58,10 @@ def build_graph(llm: LLM, tools: ToolRegistry | None = None) -> StateGraph:
 
     def critic(s: AgentState) -> dict:
         failed = [r for r in s.results if not r.verified]
-        evidence = json.dumps([r.model_dump(mode="json") for r in s.results], indent=2)
+                evidence = json.dumps([r.model_dump(mode="json") for r in s.results], indent=2)
+        claims_json = json.dumps([c.model_dump(mode="json") for c in s.claims])
         review = generate(llm, "critic", Critique, SYSTEM["critic"],
-                          f"Validation evidence:\n{evidence}\n\nClaims:\n{json.dumps([c.model_dump(mode="json") for c in s.claims])}")
+                          f"Validation evidence:\n{evidence}\n\nClaims:\n{claims_json}")
         # Tool evidence is authoritative; the LLM only contributes the explanation.
         verdict = "revise" if failed else "accept"
         note = "" if review.verdict == verdict else " [verdict overridden by tool evidence]"
