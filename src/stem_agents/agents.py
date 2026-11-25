@@ -9,6 +9,7 @@ Design rules
 from __future__ import annotations
 
 import json
+
 from .graph import END, StateGraph
 from .llm import LLM
 from .models import (AgentState, ClaimResult, Critique, Formalization, HypothesisSet, Plan, Report)
@@ -53,7 +54,8 @@ def build_graph(llm: LLM, tools: ToolRegistry | None = None) -> StateGraph:
         for claim in s.claims:
             tool = "check_identity" if claim.kind == "identity" else "check_monte_carlo"
             res = tools.call(tool, claim=claim)
-            results.append(res.value if res.ok else ClaimResult(claim_id=claim.id, status="error", detail=res.error or "tool failed"))
+            results.append(res.value if res.ok else ClaimResult(
+                claim_id=claim.id, status="error", detail=res.error or "tool failed"))
         return {"results": results}
 
     def critic(s: AgentState) -> dict:
